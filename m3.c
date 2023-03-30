@@ -5,12 +5,16 @@
 #define screenWidth 640
 #define screenHeight 480
 
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
+
 #define texWidth 64
 #define texHeight 64
 
 double buffer[screenHeight][screenWidth];
 double texture[8][texWidth * texHeight];
 
+/*
 int worldMap[mapWidth][mapHeight]=
 {
   {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,7,7,7,7,7,7,7,7},
@@ -38,6 +42,7 @@ int worldMap[mapWidth][mapHeight]=
   {4,0,0,0,0,0,0,0,0,4,6,0,6,2,0,0,0,0,0,2,0,0,0,2},
   {4,4,4,4,4,4,4,4,4,4,1,1,1,2,2,2,2,2,2,3,3,3,3,3}
 };
+*/
 
 void doInput(SDL_Event *event)
 {
@@ -438,7 +443,7 @@ void playermov(struct playerpos *player, double moveSpeed, double rotSpeed)
                         player->planeY = oldPlaneX * sin(rotSpeed) + player->planeY
                                 * cos(rotSpeed);
                 }
-
+		break;
                 //blit(player.texture, player.x, player.y);
 
                 //presentScene();
@@ -741,9 +746,9 @@ int main()//int argc, char* args[])
 		//SDL_Redraw();
 
 		//speed modifiers
-		double moveSpeed = frameTime * 3.5;//5.0
+		double moveSpeed = frameTime * 1.5;//5.0
 		//the constant value is in squares/second
-		double rotSpeed = frameTime * 4;//3.0
+		double rotSpeed = frameTime * 2;//3.0
 		//the constant value is in radians/second
 
 		//Event handler

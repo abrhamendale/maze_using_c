@@ -39,11 +39,54 @@ int worldMap[mapWidth][mapHeight]=
   {4,4,4,4,4,4,4,4,4,4,1,1,1,2,2,2,2,2,2,3,3,3,3,3}
 };
 */
+
+/*
+static void loadMapData(char *filename)
+{
+	int x, y;
+	char *data, *p;
+
+	data = readFile(filename);
+
+	p = data;
+
+	for (y = 0 ; y < MAP_HEIGHT ; y++)
+	{
+		for (x = 0 ; x < MAP_WIDTH ; x++)
+		{
+			stage.map[x][y] = atoi(p);
+
+			do {p++;} while (isdigit(*p));
+		}
+	}
+
+	free(data);
+}
+
+void drawMap(void)
+{
+	int x, y, n;
+
+	for (x = 0 ; x < MAP_WIDTH ; x++)
+	{
+		for (y = 0 ; y < MAP_HEIGHT ; y++)
+		{
+			n = stage.map[x][y];
+
+			if (n > 0)
+			{
+				blitAtlasImage(tiles[n], x * MAP_TILE_SIZE, y * MAP_TILE_SIZE, 0, SDL_FLIP_NONE);
+			}
+		}
+	}
+}
+*/
+
+
 void doInput(SDL_Event *event)
 {
 	while (SDL_PollEvent(event))
 	{
-		printf("-------------------------doInput!!!--------------------%u\n", event->type);
 		switch (event->type)
 		{
 			case SDL_QUIT:
@@ -51,7 +94,6 @@ void doInput(SDL_Event *event)
 				break;
 
 			case SDL_KEYDOWN:
-				printf("----------------doKeyDowndoInput!!!---------------\n");
 				doKeyDown(&event->key);
 				break;
 
@@ -67,7 +109,6 @@ void doInput(SDL_Event *event)
 
 void doKeyDown(SDL_KeyboardEvent *event)
 {
-	printf("DoKeyDown!!!%u\n", event->keysym.scancode);
 	if (event->repeat == 0)
 	{
 		if (event->keysym.scancode == SDL_SCANCODE_UP)
@@ -123,10 +164,8 @@ void dda(struct playerpos *player, struct ray *r, int x)
 	double perpWallDist;
 	int hit = 0, h = screenHeight;
 	
-	//printf("DDA!!!\n");
 	while (hit == 0)
 	{
-		//jump to next map square, either in x-direction, or in y-direction
 		if (r->sideDistX < r->sideDistY)
 		{
 			r->sideDistX += r->deltaDistX;
@@ -277,7 +316,7 @@ void renderfloor(struct playerpos *player, struct bufarray *buffer)//, double te
 		int p = y - screenHeight / 2;
 		double posZ = 0.5 * screenHeight;
 		float rowDistance = posZ / p;
-		float floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenHeight;
+		float floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
 		float floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
 		float floorX = player->posX + rowDistance * rayDirX0;
 		float floorY = player->posY + rowDistance * rayDirY0;
@@ -300,16 +339,8 @@ void renderfloor(struct playerpos *player, struct bufarray *buffer)//, double te
 			color = (color >> 1) & 8355711; // make a bit darker
 			(buffer->buf)[screenHeight - y - 1][x] = color;
 			//(floorbuffer.buf)[SCREEN_HEIGHT - y - 1][x] = color;
-			//printf("Buffer %d %d:%f", y, x, (buffer->buf)[SCREEN_HEIGHT - y - 1][x]);
 		}
 	}
-	//printf("For loop\n");
-	/*
-	for (int i = 0 ; i < 300 ; i++)
-		for(int j = 0 ; j < 300 ; j++)
-			(floorbuffer.buf)[i][j] = buffer[i][j];
-	*/
-	//return (floorbuffer);
 }
 
 SDL_Window *initw()
@@ -321,7 +352,7 @@ SDL_Window *initw()
 	else
 	{
 		//Create window
-		window = SDL_CreateWindow("SDL Tutorial!", SDL_WINDOWPOS_UNDEFINED
+		window = SDL_CreateWindow("  MAZE  ", SDL_WINDOWPOS_UNDEFINED
 				, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight
 				, SDL_WINDOW_SHOWN);
 		if(window == NULL)
@@ -348,10 +379,10 @@ void texloader(SDL_Surface *screenSurface)
 	//double p[8][texWidth * texHeight];
 	//p = texture;
 
-	tloader = IMG_Load("pics/188.png");
+	tloader = IMG_Load("pics/92.png");
 	tloader = SDL_ConvertSurface(tloader, screenSurface->format, 0);
 	loader(texture[0], tloader->pixels, tloader->w, tloader->h);
-	tloader = IMG_Load("pics/183.png");
+	tloader = IMG_Load("pics/75.png");
 	printf("1!!!\n");
 	tloader = SDL_ConvertSurface(tloader, screenSurface->format, 0);
 	printf("Screen surface Format: %u\n", screenSurface->format->format);
@@ -359,10 +390,10 @@ void texloader(SDL_Surface *screenSurface)
 	loader(texture[1], tloader->pixels, tloader->w, tloader->h);
 	tloader = IMG_Load("pics/8.png");
 	printf("2!!!\n");
-	//tloader = IMG_Load("pics/167.png");
+	//tloader = IMG_Load("pics/177.png");
 	tloader = SDL_ConvertSurface(tloader, screenSurface->format, 0);
 	loader(texture[2], tloader->pixels, tloader->w, tloader->h);
-	tloader = IMG_Load("pics/134.png");
+	tloader = IMG_Load("pics/8.png");
 	printf("3!!!\n");
 	tloader = SDL_ConvertSurface(tloader, screenSurface->format, 0);
 	loader(texture[3], tloader->pixels, tloader->w, tloader->h);
@@ -374,7 +405,7 @@ void texloader(SDL_Surface *screenSurface)
 	tloader = SDL_ConvertSurface(tloader, screenSurface->format, 0);
 	loader(texture[5], tloader->pixels, tloader->w, tloader->h);
 	printf("6!!!\n");
-	tloader = IMG_Load("pics/134.png");
+	tloader = IMG_Load("pics/74.png");
 	tloader = SDL_ConvertSurface(tloader, screenSurface->format, 0);
 	loader(texture[6], tloader->pixels, tloader->w, tloader->h);
 	printf("7!!!\n");
@@ -396,7 +427,6 @@ void playermov(struct playerpos *player, double moveSpeed, double rotSpeed)
 		if (app.up)
 		{
 			//move forward if no wall in front of you
-                        printf("UP\n");
 			if(worldMap[(int)(player->posX + player->dirX * moveSpeed
                                                 )][(int)(player->posY)] == 0)
                                 player->posX += player->dirX * moveSpeed;
@@ -407,7 +437,6 @@ void playermov(struct playerpos *player, double moveSpeed, double rotSpeed)
 
 	                if (app.down)
                 {
-                        printf("UDOWN\n");
 			//move backwards if no wall behind you
                         if (worldMap[(int)(player->posX - player->dirX
                                                 * moveSpeed)][(int)(player->posY)] == 0)
@@ -419,7 +448,6 @@ void playermov(struct playerpos *player, double moveSpeed, double rotSpeed)
 
                 if (app.right)
                 {
-                        printf("LEFT\n");
 			//rotate to the right
                         //camera direction and camera plane must be rotated
                         oldDirX = player->dirX;
@@ -434,7 +462,6 @@ void playermov(struct playerpos *player, double moveSpeed, double rotSpeed)
 
                 if (app.left)
                 {
-                        printf("RIGHT\n");
 			//rotate to the left
                         //both camera direction and camera plane must be rotate
                         oldDirX = player->dirX;
@@ -523,9 +550,9 @@ int main()//int argc, char* args[])
 		//printf("%f", 1.0 / frameTime); //FPS counter
 		//SDL_Redraw();
 		//speed modifiers
-		double moveSpeed = frameTime * 1.2;//5.0
+		double moveSpeed = frameTime * 2;//5.0
 		//the constant value is in squares/second
-		double rotSpeed = frameTime * 1.2;//3.0
+		double rotSpeed = frameTime * 2;//3.0
 		playermov(&player, moveSpeed, rotSpeed);
 	}
 }
