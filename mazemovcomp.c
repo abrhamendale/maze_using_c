@@ -387,11 +387,11 @@ void playermov(struct playerpos *player, double moveSpeed, double rotSpeed)
 	while (1)//SDL_PollEvent(&e) != 0)
 	{
 		doInput(&e);
-		printf("App.up%d\n", app.left);
+		//printf("App.up%d\n", app.left);
 		if (app.up)
 		{
 			//move forward if no wall in front of you
-                        //printf("UP\n");
+                        printf("UP\n");
 			if(worldMap[(int)(player->posX + player->dirX * moveSpeed
                                                 )][(int)(player->posY)] == 0)
                                 player->posX += player->dirX * moveSpeed;
@@ -402,7 +402,8 @@ void playermov(struct playerpos *player, double moveSpeed, double rotSpeed)
 
 	                if (app.down)
                 {
-                        //move backwards if no wall behind you
+                        printf("UDOWN\n");
+			//move backwards if no wall behind you
                         if (worldMap[(int)(player->posX - player->dirX
                                                 * moveSpeed)][(int)(player->posY)] == 0)
                                 player->posX -= player->dirX * moveSpeed;
@@ -411,9 +412,10 @@ void playermov(struct playerpos *player, double moveSpeed, double rotSpeed)
                                 player->posY -= player->dirY * moveSpeed;
                 }
 
-                if (app.left)
+                if (app.right)
                 {
-                        //rotate to the right
+                        printf("LEFT\n");
+			//rotate to the right
                         //camera direction and camera plane must be rotated
                         oldDirX = player->dirX;
                         player->dirX = player->dirX * cos(-rotSpeed) - player->dirY * sin(-rotSpeed);
@@ -423,12 +425,12 @@ void playermov(struct playerpos *player, double moveSpeed, double rotSpeed)
                                 - player->planeY * sin(-rotSpeed);
                         player->planeY = oldPlaneX * sin(-rotSpeed) + player->planeY
                                 * cos(-rotSpeed);
-			printf("--------------------------Move left!!!\n");
                 }
 
-                if (app.right)
+                if (app.left)
                 {
-                        //rotate to the left
+                        printf("RIGHT\n");
+			//rotate to the left
                         //both camera direction and camera plane must be rotate
                         oldDirX = player->dirX;
                         player->dirX = player->dirX * cos(rotSpeed) - player->dirY * sin(rotSpeed);
@@ -438,7 +440,7 @@ void playermov(struct playerpos *player, double moveSpeed, double rotSpeed)
                         player->planeY = oldPlaneX * sin(rotSpeed) + player->planeY
                                 * cos(rotSpeed);
                 }
-
+		break;
                 //blit(player.texture, player.x, player.y);
 
                 //presentScene();
@@ -471,9 +473,6 @@ int main()//int argc, char* args[])
 	printf("Texture Error\n");
 	while (quit == 0)
 	{
-		//player.posX = posX, player.posY = posY, player.dirX = dirX, player.dirY = dirY;
-		//player.planeX = planeX, player.planeY = planeY, player.time = time, player.oldTime = oldTime;
-
 		renderfloor(&player, &buffer_array);//, texture);
 		//printf("Floor Error\n");
 
@@ -483,226 +482,7 @@ int main()//int argc, char* args[])
 				buffer[i][j] = (buffer_array.buf)[i][j];
 				//printf("Floor %d %d:%f", i, j, buffer[i][j]);
 			}
-
-		/*
-		//Floor rendering
-		for(int y = 0; y < h; y++)
-		{
-			// rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-			float rayDirX0 = dirX - planeX;
-			float rayDirY0 = dirY - planeY;
-			float rayDirX1 = dirX + planeX;
-			float rayDirY1 = dirY + planeY;
-
-		// Current y position compared to the center of the screen (the horizon)
-			int p = y - screenHeight / 2;
-
-			// Vertical position of the camera.
-			float posZ = 0.5 * screenHeight;
-
-		// Horizontal distance from the camera to the floor for the current row.
-		//0.5 is the z position exactly in the middle between floor and ceiling.
-			float rowDistance = posZ / p;
-			// calculate the real world step vector we 
-			// have to add for each x (parallel to camera plane)
-			// adding step by step avoids multiplications 
-			// with a weight in the inner loop
-			float floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
-			float floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
-			// real world coordinates of the leftmost column.
-			// This will be updated as we step to the right.
-			float floorX = posX + rowDistance * rayDirX0;
-			float floorY = posY + rowDistance * rayDirY0;
-
-			for(int x = 0; x < screenWidth; ++x)
-			{
-				// the cell coord is simply got from the 
-				// integer parts of floorX and floorY
-				int cellX = (int)(floorX);
-				int cellY = (int)(floorY);
-
-				// get the texture coordinate from the fractional part
-				int tx = (int)(texWidth * (floorX - cellX)) & (texWidth - 1);
-				int ty = (int)(texHeight * (floorY - cellY)) & (texHeight - 1);
-
-				floorX += floorStepX;
-				floorY += floorStepY;
-
-				// choose texture and draw the pixel
-				int floorTexture = 3;
-				int ceilingTexture = 6;
-				Uint32 color;
-
-				// floor
-				color = texture[floorTexture][texWidth * ty + tx];
-				color = (color >> 1) & 8355711; // make a bit darker
-				buffer[y][x] = color;
-
-				//ceiling (symmetrical, at screenHeight - y - 1 instead of y)
-				color = texture[ceilingTexture][texWidth * ty + tx];
-				color = (color >> 1) & 8355711; // make a bit darker
-				buffer[screenHeight - y - 1][x] = color;
-			}
-		}
-	*/
-	
-	
-	
-	/*Wall rendering
-	//generate some textures
-	for(int x = 0; x < texWidth; x++)
-		for(int y = 0; y < texHeight; y++)
-		{
-			int xorcolor = (x * 256 / texWidth) ^ (y * 256 / texHeight);
-			//int xcolor = x * 256 / texWidth;
-			int ycolor = y * 256 / texHeight;
-			int xycolor = y * 128 / texHeight + x * 128 / texWidth;
-			texture[0][texWidth * y + x] = 65536 * 254 * (x != y && x != texWidth - y);
-			//flat red texture with black cross
-			texture[1][texWidth * y + x] = xycolor + 256 * xycolor + 65536 * xycolor;
-			//sloped greyscale
-			texture[2][texWidth * y + x] = 256 * xycolor + 65536 * xycolor;
-			//sloped yellow gradient
-			texture[3][texWidth * y + x] = xorcolor + 256 * xorcolor + 65536 * xorcolor;
-			//xor greyscale
-			texture[4][texWidth * y + x] = 256 * xorcolor;
-			//xor green
-			texture[5][texWidth * y + x] = 65536 * 192 * (x % 16 && y % 16);
-			//red bricks
-			texture[6][texWidth * y + x] = 65536 * ycolor;
-			//red gradient
-			texture[7][texWidth * y + x] = 128 + 256 * 128 + 65536 * 128;
-			//flat grey texture
-		}
-	*/
-	renderwall(&player);
-/*	
-	for(int x = 0; x < w; x++)
-		{
-			//calculate ray position and direction
-			double cameraX = 2 * x / (double)w - 1;
-			//x-coordinate in camera space
-			double rayDirX = dirX + planeX * cameraX;
-			double rayDirY = dirY + planeY * cameraX;
-			//which box of the map we're in
-			int mapX = (int)posX;
-			int mapY = (int)posY;
-
-			//length of ray from current position 
-			//to next x or y-side
-			double sideDistX;
-			double sideDistY;
-
-			//length of ray from one x or y-side to next x or y-side
-			double deltaDistX = (rayDirX == 0) ? 1e30 : fabs(1 / rayDirX);
-			double deltaDistY = (rayDirY == 0) ? 1e30 : fabs(1 / rayDirY);
-			double perpWallDist;
-
-			//to step in x or y-direction (either +1 or -1)
-			int stepX;
-			int stepY;
-
-			int hit = 0; //was there a wall hit?
-			int side; //was a NS or a EW wall hit?
-			
-			//calculate step and initial sideDist
-			if (rayDirX < 0)
-			{
-				stepX = -1;
-				sideDistX = (posX - mapX) * deltaDistX;
-			}
-			else
-			{
-				stepX = 1;
-				sideDistX = (mapX + 1.0 - posX) * deltaDistX;
-			}
-			if (rayDirY < 0)
-			{
-				stepY = -1;
-				sideDistY = (posY - mapY) * deltaDistY;
-			}
-			else
-			{
-				stepY = 1;
-				sideDistY = (mapY + 1.0 - posY) * deltaDistY;
-			}
-			//perform DDA
-			while (hit == 0)
-			{
-				//jump to next map square, either in x-direction, or in y-direction
-				if (sideDistX < sideDistY)
-				{
-					sideDistX += deltaDistX;
-					mapX += stepX;
-					side = 0;
-				}
-				else
-				{
-					sideDistY += deltaDistY;
-					mapY += stepY;
-					side = 1;
-				}
-				//Check if ray has hit a wall
-				if (worldMap[mapX][mapY] > 0) hit = 1;
-			}
-			//Calculate distance projected on camera
-			//direction (Euclidean distance would give
-			//fisheye effect!)
-			if(side == 0) 
-				perpWallDist = (sideDistX - deltaDistX);
-			else
-				perpWallDist = (sideDistY - deltaDistY);
-			//Calculate height of line to draw on screen
-			int lineHeight = (int)(h / perpWallDist);
-
-			//calculate lowest and highest pixel to
-			//fill in current stripe
-			int drawStart = -lineHeight / 2 + h / 2;
-			if(drawStart < 0)
-				drawStart = 0;
-			int drawEnd = lineHeight / 2 + h / 2;
-			if(drawEnd >= h)
-				drawEnd = h - 1;
-
-			//texturing calculations
-			int texNum = worldMap[mapX][mapY] - 1;
-			//1 subtracted from it so that texture 0 can be used!
-      
-			//calculate value of wallX
-			double wallX; //where exactly the wall was hit
-			if (side == 0)
-				wallX = posY + perpWallDist * rayDirY;
-			else
-				wallX = posX + perpWallDist * rayDirX;
-			wallX -= floor(wallX);
-
-			//x coordinate on the texture
-			int texX = (int)(wallX * (double)texWidth);
-			if(side == 0 && rayDirX > 0)
-				texX = texWidth - texX - 1;
-			if(side == 1 && rayDirY < 0)
-				texX = texWidth - texX - 1;
-			
-			// How much to increase the texture coordinate per screen pixel
-			double step = 1.0 * texHeight / lineHeight;
-			// Starting texture coordinate
-			double texPos = (drawStart - h / 2 + lineHeight / 2) * step;
-			for(int y = drawStart; y<drawEnd; y++)
-			{
-				// Cast the texture coordinate to integer, 
-				// and mask with (texHeight - 1) in case of overflow
-				int texY = (int)texPos & (texHeight - 1);
-				texPos += step;
-				Uint32 color = texture[texNum][texHeight * texY + texX];
-				//make color darker for y-sides: R, G and B byte each 
-				//divided through two with a "shift" and an "and"
-				if(side == 1)
-					color = (color >> 1) & 8355711;
-				buffer[y][x] = color;
-				//printf("SEG%d %d %f ", x, y, buffer[x][y]);
-			}
-		}
-	*/
+		renderwall(&player);
 		unsigned int * pixels = screenSurface->pixels;
 		int width = screenSurface->w;
 		int height = screenSurface->h;
@@ -714,7 +494,6 @@ int main()//int argc, char* args[])
 		{
 			for (int x = 0; x < width - 1; ++x)
 			{
-				//printf("Buffer %d %d %d ", x, y, (unsigned int)floor(buffer[y][x]));
 				if (x > 640 || y > 640)
 					pixels[x + y * width] = SDL_MapRGBA(screenSurface->format, 200, 50, 50, 255);
 				else
@@ -731,7 +510,6 @@ int main()//int argc, char* args[])
 			for(int x = 0; x < w; x++)
 				buffer[y][x] = 0;
 		//clear the buffer instead of cls()
-
 		//timing for input and FPS counter
 		oldTime = time;
 		time = SDL_GetTicks();
@@ -739,155 +517,10 @@ int main()//int argc, char* args[])
 		//frameTime is the time this frame has taken, in seconds
 		//printf("%f", 1.0 / frameTime); //FPS counter
 		//SDL_Redraw();
-
 		//speed modifiers
-		double moveSpeed = frameTime * 3.5;//5.0
+		double moveSpeed = frameTime * 1.2;//5.0
 		//the constant value is in squares/second
-		double rotSpeed = frameTime * 4;//3.0
-		//the constant value is in radians/second
-
-		//Event handler
-		//SDL_Event e;	
-		//struct App app;	
-		//Handle events on queue
+		double rotSpeed = frameTime * 1.2;//3.0
 		playermov(&player, moveSpeed, rotSpeed);
 	}
 }
-		/*
-		while (SDL_PollEvent(&e) != 0)
-		{
-			double oldDirX = 0;
-			double oldPlaneX = 0; 
-			//User requests quit
-			if (e.type == SDL_QUIT)
-				quit = 1;
-			//user presses a key
-			else if (e.type == SDL_KEYDOWN)
-			{
-				//Select surfaces based on key press
-				switch (e.key.keysym.sym)
-				{
-					case SDLK_UP:
-						//move forward if no wall in front of you
-						//printf("UP\n");
-						if(worldMap[(int)(player.posX + player.dirX * moveSpeed)]
-								[(int)(player.posY)] == 0)
-							player.posX += player.dirX * moveSpeed;
-						if(worldMap[(int)(player.posX)][(int)(player.posY + player.dirY * moveSpeed)] == 0)
-							player.posY += player.dirY * moveSpeed;
-						break;
-					case SDLK_DOWN:
-						//move backwards if no wall behind you
-						if (worldMap[(int)(player.posX - player.dirX * moveSpeed)][(int)(player.posY)] == 0)
-							player.posX -= player.dirX * moveSpeed;
-						if (worldMap[(int)player.posX][(int)(player.posY - player.dirY * moveSpeed)] == 0)
-							player.posY -= player.dirY * moveSpeed;
-						break;
-					case SDLK_RIGHT:
-						//rotate to the right
-						//camera direction and camera plane must be rotated
-						oldDirX = player.dirX;
-						player.dirX = player.dirX * cos(-rotSpeed) - player.dirY * sin(-rotSpeed);
-						player.dirY = oldDirX * sin(-rotSpeed) + player.dirY * cos(-rotSpeed);
-						oldPlaneX = player.planeX;
-						player.planeX = player.planeX * cos(-rotSpeed) - player.planeY * sin(-rotSpeed);
-						player.planeY = oldPlaneX * sin(-rotSpeed) + player.planeY * cos(-rotSpeed);
-						break;
-					case SDLK_LEFT:
-						//rotate to the left
-						//both camera direction and camera plane must be rotate
-						oldDirX = player.dirX;
-						player.dirX = player.dirX * cos(rotSpeed) - player.dirY * sin(rotSpeed);
-						player.dirY = oldDirX * sin(rotSpeed) + player.dirY * cos(rotSpeed);
-						oldPlaneX = player.planeX;
-						player.planeX = player.planeX * cos(rotSpeed) - player.planeY * sin(rotSpeed);
-						player.planeY = oldPlaneX * sin(rotSpeed) + player.planeY * cos(rotSpeed);
-						break;
-					case SDLK_UP && SDLK_LEFT:
-						oldDirX = dirX;
-                                                dirX = dirX * cos(rotSpeed) - dirY * sin(rotSpeed);
-                                                dirY = oldDirX * sin(rotSpeed) + dirY * cos(rotSpeed);
-                                                oldPlaneX = planeX;
-                                                planeX = planeX * cos(rotSpeed) - planeY * sin(rotSpeed);
-                                                planeY = oldPlaneX * sin(rotSpeed) + planeY * cos(rotSpeed);
-printf("UP\n");
-                                                if(worldMap[(int)(posX + dirX * moveSpeed)]
-                                                                [(int)(posY)] == 0)
-                                                        posX += dirX * moveSpeed;
-                                                if(worldMap[(int)(posX)][(int)(posY + dirY * moveSpeed)] == 0)
-                                                        posY += dirY * moveSpeed;
-oldDirX = dirX;
-
-						break;
-
-				}
-			}
-			
-		//doInput();
-
-		if (app.up)
-		{
-			//move forward if no wall in front of you
-			//printf("UP\n");
-			if(worldMap[(int)(player.posX + player.dirX * moveSpeed
-						)][(int)(player.posY)] == 0)
-				player.posX += player.dirX * moveSpeed;
-			if(worldMap[(int)(player.posX)][(int)(player.posY
-						+ player.dirY * moveSpeed)] == 0)
-				player.posY += player.dirY * moveSpeed;
-		}
-
-		if (app.down)
-		{
-			//move backwards if no wall behind you
-			if (worldMap[(int)(player.posX - player.dirX
-						* moveSpeed)][(int)(player.posY)] == 0)
-				player.posX -= player.dirX * moveSpeed;
-			if (worldMap[(int)player.posX][(int)(player.posY
-						- player.dirY * moveSpeed)] == 0)
-				player.posY -= player.dirY * moveSpeed;
-		}
-
-		if (app.left)
-		{
-			//rotate to the right
-			//camera direction and camera plane must be rotated
-			oldDirX = player.dirX;
-			player.dirX = player.dirX * cos(-rotSpeed) - player.dirY * sin(-rotSpeed);
-			player.dirY = oldDirX * sin(-rotSpeed) + player.dirY * cos(-rotSpeed);
-			oldPlaneX = player.planeX;
-			player.planeX = player.planeX * cos(-rotSpeed)
-				- player.planeY * sin(-rotSpeed);
-			player.planeY = oldPlaneX * sin(-rotSpeed) + player.planeY
-				* cos(-rotSpeed);
-		}
-
-		if (app.right)
-		{
-			//rotate to the left
-			//both camera direction and camera plane must be rotate
-			oldDirX = player.dirX;
-			player.dirX = player.dirX * cos(rotSpeed) - player.dirY
-				* sin(rotSpeed);
-			player.dirY = oldDirX * sin(rotSpeed) + player.dirY * cos(rotSpeed);
-			oldPlaneX = player.planeX;
-			player.planeX = player.planeX * cos(rotSpeed)
-				- player.planeY * sin(rotSpeed);
-			player.planeY = oldPlaneX * sin(rotSpeed) + player.planeY
-				* cos(rotSpeed);
-		}
-
-		blit(player.texture, player.x, player.y);
-
-		presentScene();
-
-		SDL_Delay(16);
-		}
-	
-		while(SDL_PollEvent(&e))
-		{
-			if(e.type == SDL_QUIT)
-			quit = 1;
-		}
-	}
-}*/
